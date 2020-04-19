@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Traclorie | Meal & Clorie Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+    />
+  </head>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+        'Open Sans', 'Helvetica Neue', sans-serif;
+      text-rendering: optimizeLegibility;
+    }
+  </style>
+  <body>
+    <nav class="nav-wrapper blue">
+      <div class="container">
+        <a href="#" class="brand-logo center">Traclorie</a>
+        <ul class="right">
+          <li><a href="#" class="clear-btn btn blue lighten-3">Clear All</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title">Add Meal / Food Item</span>
+          <form class="col">
+            <div class="row">
+              <div class="input-field col s6">
+                <input type="text" id="item-name" placeholder="Add Item" />
+                <label for="item-name">Meal</label>
+              </div>
+              <div class="input-field col s6">
+                <input type="text" id="item-calories" placeholder="Add Calories" />
+                <label for="item-calories">Calories</label>
+              </div>
+              <button class="add-btn btn blue darken-3"><i class="fa fa-plus"></i> Add Meal</button>
+              <!-- <button class="update-btn btn orange">
+                <i class="fa fa-pen-square"></i> Update Meal
+              </button>
+              <button class="delete-btn btn red"><i class="fa fa-trash"></i> Delete Meal</button> -->
+              <button class="back-btn btn grey right">
+                <i class="fa fa-chevron-circle-left"></i> Back
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Clorie Content -->
+      <h3 class="center-align">Total Calories : <span class="total-clories">0</span></h3>
+      <ul id="item-list" class="collection">
+        <!-- <li class="collection-item" id="item-0">
+          <strong>Steak Dinner: </strong> <em>1200 Calories</em>
+          <a href="#" class="secondary-content">
+            <i class="fa fa-pencil-alt"></i>
+          </a>
+        </li> -->
+      </ul>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.5.0.min.js"
+      integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
