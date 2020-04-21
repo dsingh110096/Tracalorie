@@ -2,8 +2,6 @@
 
 //Item Controller
 const ItemCtrl = (() => {
-  //This is all private funtion and object can't accessible
-
   //Item Constractor
   const Item = function (id, name, calories) {
     this.id = id;
@@ -14,9 +12,9 @@ const ItemCtrl = (() => {
   //Data Structure /State
   const data = {
     items: [
-      { id: 0, name: 'Steak Dinner', calories: 1200 },
-      { id: 1, name: 'Eggs', calories: 600 },
-      { id: 2, name: 'Fruits', calories: 300 },
+      // { id: 0, name: 'Steak Dinner', calories: 1200 },
+      // { id: 1, name: 'Eggs', calories: 600 },
+      // { id: 2, name: 'Fruits', calories: 300 },
     ],
     currentItem: null,
     totalCalories: 0,
@@ -24,9 +22,11 @@ const ItemCtrl = (() => {
 
   return {
     //Public Methods
+
     getItems: () => {
       return data.items;
     },
+
     addItem: (name, calories) => {
       let ID;
       //Creating IDs for item,
@@ -43,6 +43,7 @@ const ItemCtrl = (() => {
       data.items.push(newItem);
       return newItem;
     },
+
     logData: () => {
       return data;
     },
@@ -58,27 +59,54 @@ const UICtrl = (() => {
     itemNameInput: '#item-name',
     itemCaloriesInput: '#item-calories',
   };
+
   //Public Methods
   return {
     populateItemList: (items) => {
       let html = '';
-
       items.forEach((item) => {
-        html += `<li class="collection-item" id="item-${item.id}">
-                  <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
-                  <a href="#" class="secondary-content">
-                    <i class="edit-item fa fa-edit"></i>
-                  </a>
-                </li>`;
+        html += `
+        <li class="collection-item" id="item-${item.id}">
+          <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+          <a href="#" class="secondary-content">
+            <i class="edit-item fa fa-edit"></i>
+          </a>
+        </li>`;
       });
       //inserting item list into to Ul
       document.querySelector(UISelectors.itemList).innerHTML = html;
     },
+
     getItemInput: () => {
       return {
         name: document.querySelector(UISelectors.itemNameInput).value,
         calories: document.querySelector(UISelectors.itemCaloriesInput).value,
       };
+    },
+
+    addListItem: (item) => {
+      //Show the list
+      document.querySelector(UISelectors.itemList).style.display = 'block';
+
+      //creating li element
+      const li = document.createElement('li');
+      //adding class
+      li.className = 'collection-item';
+      li.id = `item-${item.id}`;
+      li.innerHTML = `
+      <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+      <a href="#" class="secondary-content">
+        <i class="edit-item fa fa-edit"></i>
+      </a>`;
+      document.querySelector(UISelectors.itemList).insertAdjacentElement('beforeend', li);
+    },
+
+    clearInputFields: () => {
+      document.querySelector(UISelectors.itemNameInput).value = '';
+      document.querySelector(UISelectors.itemCaloriesInput).value = '';
+    },
+    hideList: () => {
+      document.querySelector(UISelectors.itemList).style.display = 'none';
     },
     getUISelectors: () => {
       return UISelectors;
@@ -88,8 +116,7 @@ const UICtrl = (() => {
 
 //App Controller
 const AppCtrl = ((ItemCtrl, UICtrl) => {
-  //load all event liseners
-
+  //Load all event liseners
   const loadEventListeners = () => {
     //Get UISelctors
     const UISelectors = UICtrl.getUISelectors();
@@ -104,6 +131,10 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
     if (input.name !== '' && input.calories !== '') {
       //Add item
       const newItem = ItemCtrl.addItem(input.name, input.calories);
+      //Add item to the UI list
+      UICtrl.addListItem(newItem);
+      //clearing inputfields
+      UICtrl.clearInputFields();
     }
     e.preventDefault();
   };
@@ -113,13 +144,16 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
     init: () => {
       //fetching item from data structure in ItemCtrl controller
       const items = ItemCtrl.getItems();
-      //Populate list with items
-      UICtrl.populateItemList(items);
+      if (items.length === 0) {
+        UICtrl.hideList();
+      } else {
+        //Populate list with items
+        UICtrl.populateItemList(items);
+      }
       //Load Event listeners
       loadEventListeners();
     },
   };
 })(ItemCtrl, UICtrl);
-
 //Initalize App
 AppCtrl.init();
