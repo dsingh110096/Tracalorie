@@ -22,7 +22,6 @@ const ItemCtrl = (() => {
 
   return {
     //Public Methods
-
     getItems: () => {
       return data.items;
     },
@@ -43,6 +42,7 @@ const ItemCtrl = (() => {
       data.items.push(newItem);
       return newItem;
     },
+
     getTotalCalories: () => {
       let total = 0;
       //looping through items and adding calories
@@ -53,6 +53,25 @@ const ItemCtrl = (() => {
       data.totalCalories = total;
       return data.totalCalories;
     },
+
+    getItemById: (id) => {
+      let found = null;
+      data.items.forEach((item) => {
+        if (item.id === id) {
+          found = item;
+        }
+      });
+      return found;
+    },
+
+    setCurrentItem: (item) => {
+      data.currentItem = item;
+    },
+
+    getCurrentItem: () => {
+      return data.currentItem;
+    },
+
     logData: () => {
       return data;
     },
@@ -65,6 +84,9 @@ const UICtrl = (() => {
   const UISelectors = {
     itemList: '#item-list',
     addBtn: '.add-btn',
+    updateBtn: '.update-btn',
+    deleteBtn: '.delete-btn',
+    backBtn: '.back-btn',
     itemNameInput: '#item-name',
     itemCaloriesInput: '#item-calories',
     totalCalories: '.total-calories',
@@ -97,7 +119,6 @@ const UICtrl = (() => {
     addListItem: (item) => {
       //Show the list
       document.querySelector(UISelectors.itemList).style.display = 'block';
-
       //creating li element
       const li = document.createElement('li');
       //adding class
@@ -119,9 +140,34 @@ const UICtrl = (() => {
       document.querySelector(UISelectors.itemNameInput).value = '';
       document.querySelector(UISelectors.itemCaloriesInput).value = '';
     },
+
     hideList: () => {
       document.querySelector(UISelectors.itemList).style.display = 'none';
     },
+
+    clearEditState: () => {
+      UICtrl.clearInputFields();
+      document.querySelector(UISelectors.updateBtn).style.display = 'none';
+      document.querySelector(UISelectors.deleteBtn).style.display = 'none';
+      document.querySelector(UISelectors.backBtn).style.display = 'none';
+      document.querySelector(UISelectors.addBtn).style.display = 'inline';
+    },
+
+    addItemToForm: () => {
+      document.querySelector(UISelectors.itemNameInput).value = ItemCtrl.getCurrentItem().name;
+      document.querySelector(
+        UISelectors.itemCaloriesInput
+      ).value = ItemCtrl.getCurrentItem().calories;
+      UICtrl.showEditState();
+    },
+
+    showEditState: () => {
+      document.querySelector(UISelectors.updateBtn).style.display = 'inline';
+      document.querySelector(UISelectors.deleteBtn).style.display = 'inline';
+      document.querySelector(UISelectors.backBtn).style.display = 'inline';
+      document.querySelector(UISelectors.addBtn).style.display = 'none';
+    },
+
     getUISelectors: () => {
       return UISelectors;
     },
@@ -134,8 +180,10 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
   const loadEventListeners = () => {
     //Get UISelctors
     const UISelectors = UICtrl.getUISelectors();
-    //Add item event
+    //Add item event Click
     document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
+    //Edit icon even Click
+    document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
   };
 
   const itemAddSubmit = (e) => {
@@ -153,13 +201,33 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
       UICtrl.showTotalCalories(totalCalories);
       //clearing inputfields
       UICtrl.clearInputFields();
+    } else {
+      alert('Please Provide the Input first.');
     }
     e.preventDefault();
   };
 
+  //Update item submit
+  const itemEditClick = (e) => {
+    if (e.target.classList.contains('edit-item')) {
+      const listId = e.target.parentNode.parentNode.id;
+      const listIdArr = listId.split('-');
+      //getting the actual id
+      const id = parseInt(listIdArr[1]);
+      //item to edit
+      const itemToEdit = ItemCtrl.getItemById(id);
+      //setting currentItem
+      ItemCtrl.setCurrentItem(itemToEdit);
+      //adding item to form
+      UICtrl.addItemToForm();
+    }
+    e.preventDefault();
+  };
   //Public Methods
   return {
     init: () => {
+      //clear edit state / set initial state
+      UICtrl.clearEditState();
       //fetching item from data structure in ItemCtrl controller
       const items = ItemCtrl.getItems();
       if (items.length === 0) {
