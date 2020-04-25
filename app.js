@@ -71,6 +71,7 @@ const ItemCtrl = (() => {
     getCurrentItem: () => {
       return data.currentItem;
     },
+
     updateItem: (name, calories) => {
       let found = null;
       calories = parseInt(calories);
@@ -82,6 +83,21 @@ const ItemCtrl = (() => {
         }
       });
       return found;
+    },
+
+    deleteItem: (id) => {
+      //getting the ids
+      const ids = data.items.map((item) => {
+        return item.id;
+      });
+      //getting the index
+      const index = ids.indexOf(id);
+      //removing the item from the data structure
+      data.items.splice(index, 1);
+    },
+
+    clearAllItem: () => {
+      data.items = [];
     },
 
     logData: () => {
@@ -97,6 +113,7 @@ const UICtrl = (() => {
     itemList: '#item-list',
     listItems: '#item-list li',
     addBtn: '.add-btn',
+    clearBtn: '.clear-btn',
     updateBtn: '.update-btn',
     deleteBtn: '.delete-btn',
     backBtn: '.back-btn',
@@ -198,6 +215,22 @@ const UICtrl = (() => {
       });
     },
 
+    deleteListItem: (id) => {
+      //geting the id
+      const itemID = `#item-${id}`;
+      const item = document.querySelector(itemID);
+      item.remove();
+    },
+
+    removeItems: () => {
+      let listItems = document.querySelectorAll(UISelectors.listItems);
+      //turning nodelist into the array
+      listItems = Array.from(listItems);
+      listItems.forEach((item) => {
+        item.remove();
+      });
+    },
+
     getUISelectors: () => {
       return UISelectors;
     },
@@ -216,6 +249,13 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
     document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
     //Update Item Event
     document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
+    //Back button click
+    document.querySelector(UISelectors.backBtn).addEventListener('click', (e) => {
+      e.preventDefault();
+      UICtrl.clearEditState();
+    });
+    document.querySelector(UISelectors.deleteBtn).addEventListener('click', itemDeleteSubmit);
+    document.querySelector(UISelectors.clearBtn).addEventListener('click', clearAllItemsClick);
     //Disable the submit on Enter
     document.addEventListener('keypress', (e) => {
       if (e.keyCode === 13 || e.which === 13) {
@@ -262,6 +302,7 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
     }
     e.preventDefault();
   };
+
   const itemUpdateSubmit = (e) => {
     //gettting input
     const input = UICtrl.getItemInput();
@@ -276,6 +317,42 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
     UICtrl.clearEditState();
     e.preventDefault();
   };
+
+  const itemDeleteSubmit = (e) => {
+    //getting the current item
+    const currentItem = ItemCtrl.getCurrentItem();
+    //delete from data Structure
+    ItemCtrl.deleteItem(currentItem.id);
+    //delelting the list from the UICtrl
+    UICtrl.deleteListItem(currentItem.id);
+    //getting totalcaloreis
+    const totalCalories = ItemCtrl.getTotalCalories();
+    //showing total calories to the UI
+    UICtrl.showTotalCalories(totalCalories);
+    UICtrl.clearEditState();
+    e.preventDefault();
+  };
+
+  const clearAllItemsClick = () => {
+    //Get item input from UI controller
+    const input = UICtrl.getItemInput();
+    //check for input name and input calories
+    if (input.name !== '' && input.calories !== '') {
+      //Delete all items from data structure
+      ItemCtrl.clearAllItem();
+      //getting totalcaloreis
+      const totalCalories = ItemCtrl.getTotalCalories();
+      //showing total calories to the UI
+      UICtrl.showTotalCalories(totalCalories);
+      //delete List from the UI
+      UICtrl.removeItems();
+      //hide the ul
+      UICtrl.hideList();
+    } else {
+      alert('Nothing To clear, Please Add first');
+    }
+  };
+
   //Public Methods
   return {
     init: () => {
@@ -286,7 +363,7 @@ const AppCtrl = ((ItemCtrl, UICtrl) => {
       if (items.length === 0) {
         UICtrl.hideList();
       } else {
-        //Populate list with itemsz
+        //Populate list with items
         UICtrl.populateItemList(items);
       }
       //getting totalcaloreis
